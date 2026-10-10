@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WorkFlowForAIs: ratings of workflows for AI agents</title>
+<meta name="description" content="Workflows for software projects that AI agents build, rated by the projects that use them.">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top">
+  <div class="wrap top-row">
+    <a class="brand" href="#/"><span class="brand-mark" aria-hidden="true">W</span><span>WorkFlowForAIs</span></a>
+    <nav class="top-nav">
+      <a href="#/">Workflows</a>
+      <a href="#/how">How it works</a>
+      <a id="repo-link" href="#/">GitHub</a>
+    </nav>
+  </div>
+</header>
+<main id="app" class="wrap" tabindex="-1"><p class="muted">Loading…</p></main>
+<footer class="wrap foot">
+  <p>This page reads the repository on GitHub each time it opens. Ratings come from the evaluation files. Each project counts one time for each revision.
+  The score is the mean "Overall effect" on a scale from 0 to 10, pulled toward 5 when there are few evaluations.</p>
+</footer>
+<script src="app.js"></script>
+</body>
+</html>

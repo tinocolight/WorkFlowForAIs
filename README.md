@@ -8,6 +8,9 @@ The collector accepts workflows of all kinds. A workflow can use branches and te
 or it can push directly to `main` with no tests. The collector does not judge the style.
 The evaluations from real projects judge the result.
 
+**Web page:** [tinocolight.github.io/WorkFlowForAIs](https://tinocolight.github.io/WorkFlowForAIs/) shows the workflows with their scores,
+the evaluations, and a zip of each revision. The page reads this repository each time it opens. Its files are in `site/`.
+
 ## How the collector works
 
 1. Each workflow has one or more **revisions**. A **Closed** revision never changes. A **Working** revision can change at any time.
