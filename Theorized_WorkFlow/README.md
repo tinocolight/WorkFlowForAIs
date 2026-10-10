@@ -1,27 +1,25 @@
 # Theorized workflows
 
-A workflow in this folder is a proposal. Nobody used it in a real project.
+A workflow in this folder is a proposal. No project evaluated one of its Closed revisions.
 
 ## Folder structure
 
 ```
-Theorized_WorkFlow/<Name>_WorkFlow/<Target>/Revision_<NNNN>_<Status>/
+Theorized_WorkFlow/<Name>_WorkFlow/<Target>/
+  README.md                 the scope of the target
+  STATUS.md                 generated: the evaluations and the verdict of each Closed revision
+  Evaluations/              one file for each evaluation
+  Revision_<NNNN>_Closed/   permanent content
+  Revision_<NNNN>_Working/  content that can change
 ```
 
-The root `README.md` defines each part of the path. This folder is empty now.
+## How a workflow enters and leaves this folder
 
-## Contribute a proposal
+The program `.github/scripts/evaluations.py` gives each workflow its stage from the evaluations.
+Nobody moves a workflow by opinion. The rules are in `CONTRIBUTING.md`, section 9.
 
-1. Create a new workflow. Follow `CONTRIBUTING.md`, section 4.
-2. In the `<Name>_WorkFlow/README.md`, write the problem that the workflow solves.
-3. Write the test criteria: the results that a real project must show.
+## Contribute
 
-## Move a proposal to Evaluating
-
-Move the workflow to `Evaluating_WorkFlow/` when a real project starts to use a Closed revision.
-Follow `CONTRIBUTING.md`, section 7.
-
-## Use a proposal
-
-A proposal has no evidence. If you use a proposal, close a revision first.
-Then use the Closed revision. Follow `CONTRIBUTING.md`, section 8.
+- Use a Closed revision in a project, then evaluate it: `CONTRIBUTING.md`, sections 7 and 8.
+- Improve a workflow in its Working revision: `CONTRIBUTING.md`, section 5.
+- Create a new workflow, also from a copy of a revision of any stage: `CONTRIBUTING.md`, section 4. Write the revision ID of the origin in its `README.md`.

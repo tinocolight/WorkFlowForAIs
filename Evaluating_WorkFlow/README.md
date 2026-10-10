@@ -1,24 +1,25 @@
-# Workflows in evaluation
+# Evaluating workflows
 
-Real projects use a workflow in this folder now. The results are not complete.
+Projects use a workflow in this folder now. The evidence is not sufficient for a verdict.
 
 ## Folder structure
 
 ```
-Evaluating_WorkFlow/<Name>_WorkFlow/<Target>/Revision_<NNNN>_<Status>/
+Evaluating_WorkFlow/<Name>_WorkFlow/<Target>/
+  README.md                 the scope of the target
+  STATUS.md                 generated: the evaluations and the verdict of each Closed revision
+  Evaluations/              one file for each evaluation
+  Revision_<NNNN>_Closed/   permanent content
+  Revision_<NNNN>_Working/  content that can change
 ```
 
-The root `README.md` defines each part of the path.
+## How a workflow enters and leaves this folder
 
-## Contribute evidence
+The program `.github/scripts/evaluations.py` gives each workflow its stage from the evaluations.
+Nobody moves a workflow by opinion. The rules are in `CONTRIBUTING.md`, section 9.
 
-1. Use a Closed revision in a real project.
-2. Write the result in the `<Target>/README.md`: the project, the dates, and what worked or failed.
-3. Put corrections in the Working revision. Follow `CONTRIBUTING.md`, section 5.
+## Contribute
 
-## Leave the evaluation
-
-- If the workflow completes its test criteria, move it to `Tested_WorkFlow/`.
-- If the workflow fails its test criteria, move it to `Rejected_WorkFlow/`.
-
-Follow `CONTRIBUTING.md`, section 7.
+- Use a Closed revision in a project, then evaluate it: `CONTRIBUTING.md`, sections 7 and 8.
+- Improve a workflow in its Working revision: `CONTRIBUTING.md`, section 5.
+- Create a new workflow, also from a copy of a revision of any stage: `CONTRIBUTING.md`, section 4. Write the revision ID of the origin in its `README.md`.

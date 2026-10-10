@@ -1,28 +1,25 @@
 # Tested workflows
 
-A workflow in this folder completed the test criteria in its `<Name>_WorkFlow/README.md`.
-This folder is empty now.
+A Closed revision of a workflow in this folder passed: three or more projects report that it helped.
 
 ## Folder structure
 
 ```
-Tested_WorkFlow/<Name>_WorkFlow/<Target>/Revision_<NNNN>_<Status>/
+Tested_WorkFlow/<Name>_WorkFlow/<Target>/
+  README.md                 the scope of the target
+  STATUS.md                 generated: the evaluations and the verdict of each Closed revision
+  Evaluations/              one file for each evaluation
+  Revision_<NNNN>_Closed/   permanent content
+  Revision_<NNNN>_Working/  content that can change
 ```
 
-The root `README.md` defines each part of the path.
+## How a workflow enters and leaves this folder
 
-## Move a workflow to Tested
-
-1. Write the evidence in the `<Name>_WorkFlow/README.md`: the projects, the dates, and the measured results.
-2. Write which Closed revision the evidence is for.
-3. Move the workflow. Follow `CONTRIBUTING.md`, section 7.
-
-## Use a tested workflow
-
-Use the Closed revision that the evidence is for.
-Copy its `kit/` folder into your project. Follow `README.md`, section "Use a workflow in your project".
+The program `.github/scripts/evaluations.py` gives each workflow its stage from the evaluations.
+Nobody moves a workflow by opinion. The rules are in `CONTRIBUTING.md`, section 9.
 
 ## Contribute
 
-A tested workflow can still improve. Change the Working revision only.
-Follow `CONTRIBUTING.md`, section 5.
+- Use a Closed revision in a project, then evaluate it: `CONTRIBUTING.md`, sections 7 and 8.
+- Improve a workflow in its Working revision: `CONTRIBUTING.md`, section 5.
+- Create a new workflow, also from a copy of a revision of any stage: `CONTRIBUTING.md`, section 4. Write the revision ID of the origin in its `README.md`.

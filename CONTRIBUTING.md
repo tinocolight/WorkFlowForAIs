@@ -16,6 +16,7 @@ They have these meanings only when they are in capital letters.
 ## 2. Writing rules
 
 All text in this repository MUST be in English.
+The rules below are MUST for the files of the collector. They are SHOULD for the files in a `kit/` folder.
 Humans and AI agents read the text. Many readers do not have English as their first language.
 These rules come from ASD-STE100 (Simplified Technical English), the Federal Plain Language Guidelines,
 and the Google developer documentation style guide.
@@ -45,88 +46,106 @@ and the Google developer documentation style guide.
 | it, this, that (unclear) | the name of the thing | The reader must not guess the reference. |
 | set up, carry out, look into | create, do, examine | Phrasal verbs have many meanings. |
 
-## 3. Branches and pull requests
+## 3. The collector does not restrict a workflow
+
+A workflow can have any style of work. For example, it can push directly to `main`, or it can have no tests.
+The rules of this file are for this repository only. They are not rules for the projects that use a workflow.
+
+For this repository:
 
 1. You MUST NOT push to `main`. The owner merges pull requests.
-2. Create one branch for one change.
-3. The first words of the pull request description MUST be "Merge allowed" or "Do not merge yet".
-4. If the change is not complete, write "Do not merge yet" and the work that remains.
-5. A pull request MUST NOT change a Closed revision. The automatic check refuses the change (section 9).
+2. The first words of a pull request description MUST be "Merge allowed" or "Do not merge yet".
+3. A pull request MUST pass the checks of section 10.
 
 ## 4. Add a new workflow
 
-1. Create the folder `Theorized_WorkFlow/<Name>_WorkFlow/<Target>/Revision_0001_Working/`.
-2. Put a `README.md` in the revision folder. Use the `README.md` of an existing revision as the model.
-3. Put the files that a project copies in a `kit/` folder in the revision folder.
-4. Put a `README.md` in the `<Name>_WorkFlow/` folder. Write the purpose of the workflow in two to five sentences.
-5. Add the workflow to the table "Current workflows" in the root `README.md`.
+1. Create `Theorized_WorkFlow/<Name>_WorkFlow/`. Copy `templates/WORKFLOW_README.md` to its `README.md`.
+2. Create one folder for each target, for example `WebApp/`. Copy `templates/TARGET_README.md` to its `README.md`.
+3. Create `Revision_0001_Working/` in the target. Copy `templates/REVISION_README.md` to its `README.md`.
+4. Put the files that a project copies in `Revision_0001_Working/kit/`.
+5. Run `python3 .github/scripts/evaluations.py --write`.
+
+A new workflow starts in `Theorized_WorkFlow/`.
+The owner can put a new workflow in `Evaluating_WorkFlow/` with this line in the workflow `README.md`:
+`Entry: Evaluating, decided by the owner on YYYY-MM-DD: <evidence>`.
 
 ## 5. Change a Working revision
 
 1. Change the files in the `Revision_<NNNN>_Working/` folder only.
-2. Add one line to the "Changes since the previous revision" list in the revision `README.md`.
-3. Keep each file of the `kit/` folder as short as possible. Each line costs tokens for each agent in each session.
+2. Add one line to the list "Changes since the previous revision" in the revision `README.md`.
+3. Keep each file of the `kit/` folder short. Each line costs tokens for each agent in each session.
 
 ## 6. Close a revision
 
-Close a revision when its content is ready for real projects.
-After the close, nobody changes the Closed revision. A correction goes into the next revision.
-
-Do all the steps in one commit:
+After the close, nobody changes the Closed revision. A correction goes into the next revision. Do all the steps in one commit:
 
 1. In the revision `README.md`, change the status line to `Status: Closed on YYYY-MM-DD`.
 2. Rename the folder: `git mv Revision_0002_Working Revision_0002_Closed`.
 3. Copy the Closed folder to the next number: `cp -r Revision_0002_Closed Revision_0003_Working`.
 4. In the new `README.md`, change the status line to `Status: Working`. Clear the list of changes.
-5. Update the table "Current workflows" in the root `README.md`.
+5. Run `python3 .github/scripts/evaluations.py --write`.
 
-After the owner merges the commit, create a Git tag on the merge commit:
+After the owner merges the commit, the owner creates the Git tag. The tag is the revision ID:
+`git tag LimitedTokens/WebApp/r0002 <merge-commit>` and `git push origin LimitedTokens/WebApp/r0002`.
 
-```
-git tag LimitedTokens/WebApp/r0002 <merge-commit>
-git push origin LimitedTokens/WebApp/r0002
-```
+Rename the Working folder. Do not keep a Working folder and a Closed folder with the same number.
+Each number then has one folder and one content.
 
-The tag does not include the stage. The stage can change. The tag stays the same.
+## 7. A project that uses a Closed revision
 
-Why rename, and not keep a Working folder and a Closed folder with the same number:
+1. Record the revision ID in the project, for example `LimitedTokens/WebApp/r0001`.
+2. The content of the revision never changes. If the workflow moves to a different stage, only the path changes.
+3. To find the revision, use the index in `README.md`, or the Git tag with the same name as the ID.
+4. A rejected workflow stays in `Rejected_WorkFlow/`. Nobody deletes it.
 
-- Two folders with the same number and different content cause confusion.
-- After the rename, each number has one folder. The number identifies one content.
-- The rename breaks links to the Working folder. This is correct: nobody can depend on Working content.
-- The Git tag and the commit hash keep a permanent link to each Closed revision.
+## 8. Evaluate a workflow
 
-## 7. Move a workflow to a different stage
+Evaluate only a Closed revision. One person or one AI agent writes one file for one project.
 
-1. Move the full `<Name>_WorkFlow/` folder with `git mv`. Do not change any file in the same commit.
-2. Write the reason for the move in the `README.md` of the `<Name>_WorkFlow/` folder, in a separate commit.
-3. A move to `Rejected_WorkFlow/` MUST include the reason for the rejection.
+1. Copy the block of `templates/EVALUATION.md` into a new file in `<Target>/Evaluations/`.
+2. Name the file `R<NNNN>_<YYYY-MM-DD>_<project-owner>_<project>.md`, with the values of the fields.
+3. Fill in each field. Use only the values that `templates/EVALUATION.md` allows.
+4. Run `python3 .github/scripts/evaluations.py --write`. The program updates `STATUS.md`.
+5. If the program changes the stage of the workflow, move the folder in the same pull request (section 9).
 
-The automatic check accepts a move of a Closed revision only if no file content changes.
+An evaluation file never changes. To correct it, add a new file with a later date. The newest file of a project counts.
 
-## 8. Create an original workflow from a revision
+## 9. Stages, verdicts, and moves
 
-You MAY use any revision as the start of a new workflow. Use a Closed revision.
+The program `.github/scripts/evaluations.py` gives each workflow its stage. The pull request moves the folder.
 
-1. Copy the `kit/` folder of the Closed revision.
-2. Create a new workflow with a new `<Name>` (section 4).
-3. In the new revision `README.md`, write the origin: the path and the tag of the revision that you copied.
+For each Closed revision, one evaluation counts for each project: the newest file. Let n be the count.
+"Harm" is an evaluation with Overall effect -1 or -2, or with Project state "switched".
 
-## 9. Automatic check
+| Verdict of a Closed revision | Rule |
+| --- | --- |
+| Open | n is less than 3, or the revision is not Passed and not Failed. |
+| Failed | n is 3 or more, and more than half of the evaluations are harm. |
+| Passed | n is 3 or more; two thirds or more have Overall effect +1 or +2; harm is one quarter or less; two or more project owners; the medians of Ease of use and Goal contribution are 0 or more. |
 
-The file `.github/scripts/check-closed.sh` refuses changes to Closed revisions.
-GitHub Actions runs the check on each pull request and on each push.
-Run the check on your computer before you push:
+| Level of a target | Rule, in this order |
+| --- | --- |
+| Rejected | The newest Closed revision with n of 3 or more failed. |
+| Tested | A Closed revision passed. |
+| Evaluating | A project evaluated a Closed revision, or the workflow `README.md` has an "Entry:" line of the owner. |
+| Theorized | All other cases. |
+
+The stage of the workflow is the highest level of its targets (Theorized, Evaluating, Tested).
+The stage is Rejected if each target with a verdict is Rejected and no target is higher, or if the workflow `README.md` has this line:
+`Rejection: YYYY-MM-DD: decided by the owner: <reason>`.
+
+If the stage and the folder are different, the check fails and prints the `git mv` command. Move the full `<Name>_WorkFlow/` folder.
+
+## 10. Automatic checks
+
+GitHub Actions runs these checks on each pull request and on each push. Run them before you push:
 
 ```
 bash .github/scripts/check-closed.sh origin/main
+python3 .github/scripts/evaluations.py --check --base origin/main
 ```
 
-Each Closed revision on the base MUST exist after the change, with the same files and the same content.
-The check compares the Git tree of each Closed folder. The check accepts:
+1. `check-closed.sh` refuses a change to a Closed revision or to an existing evaluation file. A stage move is accepted.
+2. `evaluations.py --check` refuses an evaluation file that is not valid, a workflow in the wrong stage folder, and a generated file that is not current.
 
-- a new `Revision_<NNNN>_Closed/` folder (the close of a revision);
-- the move of a Closed revision to a different stage folder, with no other change.
-
-The check refuses all other changes inside a `Revision_<NNNN>_Closed/` folder that exists on the base.
-The check is effective only if the owner protects `main` and requires the check to pass before a merge.
+The checks are effective only if the owner protects `main` and requires the check "collector-checks" before a merge.

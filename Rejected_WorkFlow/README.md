@@ -1,25 +1,25 @@
 # Rejected workflows
 
-A workflow in this folder failed its test criteria, or a better workflow replaced it.
-Nobody deletes a rejected workflow. Its record prevents the same error in the future.
-This folder is empty now.
+The newest revision with evidence of a workflow in this folder failed, or the owner rejected the workflow. Nobody deletes a rejected workflow. Its record prevents the same error in the future.
 
 ## Folder structure
 
 ```
-Rejected_WorkFlow/<Name>_WorkFlow/<Target>/Revision_<NNNN>_<Status>/
+Rejected_WorkFlow/<Name>_WorkFlow/<Target>/
+  README.md                 the scope of the target
+  STATUS.md                 generated: the evaluations and the verdict of each Closed revision
+  Evaluations/              one file for each evaluation
+  Revision_<NNNN>_Closed/   permanent content
+  Revision_<NNNN>_Working/  content that can change
 ```
 
-The root `README.md` defines each part of the path.
+## How a workflow enters and leaves this folder
 
-## Reject a workflow
+The program `.github/scripts/evaluations.py` gives each workflow its stage from the evaluations.
+Nobody moves a workflow by opinion. The rules are in `CONTRIBUTING.md`, section 9.
 
-1. In the `<Name>_WorkFlow/README.md`, write the reason for the rejection.
-2. Write the evidence: the project, the date, and what failed.
-3. If a different workflow replaces it, write the path of the replacement.
-4. Move the workflow. Follow `CONTRIBUTING.md`, section 7.
+## Contribute
 
-## Use a rejected workflow
-
-You MAY copy parts of a rejected workflow to create a new workflow.
-Read the reason for the rejection first. Follow `CONTRIBUTING.md`, section 8.
+- Use a Closed revision in a project, then evaluate it: `CONTRIBUTING.md`, sections 7 and 8.
+- Improve a workflow in its Working revision: `CONTRIBUTING.md`, section 5.
+- Create a new workflow, also from a copy of a revision of any stage: `CONTRIBUTING.md`, section 4. Write the revision ID of the origin in its `README.md`.
