@@ -1,5 +1,7 @@
 # LimitedTokens workflow
 
+Entry: Evaluating, decided by the owner on 2026-10-10: two applications (Acervo, Consonância) use the origin method of revision 0001.
+
 LimitedTokens is a workflow for a software project that AI agents build in Git branches.
 A human owner directs the work and merges each pull request.
 The workflow keeps the work correct when the context of each agent is limited and each token has a cost.
@@ -18,14 +20,15 @@ The workflow keeps the work correct when the context of each agent is limited an
 - Programs check the rules. A rule that only exists as text is forgotten.
 - Verification is targeted for each step and complete before each merge.
 
-## Test criteria
+## Claims
 
-The workflow moves to `Tested_WorkFlow/` when all these criteria are true:
+An evaluation of this workflow SHOULD report on these claims in the fields Strength and Problem:
 
-1. Three projects used a Closed revision for a minimum of 20 stages each.
-2. In each project, a new session continued the work from the files, with no help from the owner.
-3. In each project, two or more agents worked in parallel with no lost work.
-4. No project restarted from zero.
+1. A new session continues the work from the files, with no help from the owner.
+2. Two or more agents work in parallel with no lost work.
+3. The project never restarts from zero.
+
+The stage of the workflow follows the rules of the collector (`CONTRIBUTING.md`, section 9).
 
 ## Targets
 

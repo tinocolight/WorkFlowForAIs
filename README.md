@@ -1,60 +1,62 @@
 # WorkFlowForAIs
 
-WorkFlowForAIs is a library of workflows for software projects that AI agents build.
-A human owner directs the work. One or more AI agents do the work in Git branches.
+WorkFlowForAIs collects workflows for software projects that AI agents build.
+A workflow is a small set of Markdown files that you copy into a project.
+The files tell each AI agent how to start, how to work, how to record the work, and when to stop.
 
-A workflow is a set of Markdown files. You copy the files into a new project.
-The files tell each AI agent how to start, how to work, how to record the work, and how to stop.
-The files are for agents from all companies (Anthropic, OpenAI, Google, and others) and for humans.
+The collector accepts workflows of all kinds. A workflow can use branches and tests,
+or it can push directly to `main` with no tests. The collector does not judge the style.
+The evaluations from real projects judge the result.
 
-## How the library is organized
+## How the collector works
 
-Each workflow moves through four stages. The stage is the top folder.
+1. Each workflow has one or more **revisions**. A **Closed** revision never changes. A **Working** revision can change at any time.
+2. Each project that uses a Closed revision adds one **evaluation**: a short file with fixed fields.
+3. A program counts the evaluations. It gives each workflow a **stage**:
 
-| Folder | Stage | Meaning |
-| --- | --- | --- |
-| `Theorized_WorkFlow/` | Theorized | The workflow is a proposal. Nobody used it in a real project. |
-| `Evaluating_WorkFlow/` | Evaluating | Real projects use the workflow now. The results are not complete. |
-| `Tested_WorkFlow/` | Tested | The workflow completed the test criteria in its README. |
-| `Rejected_WorkFlow/` | Rejected | The workflow failed. Its README records why. Nobody deletes it. |
+| Stage folder | Meaning |
+| --- | --- |
+| `Theorized_WorkFlow/` | A proposal. No project evaluated a Closed revision. |
+| `Evaluating_WorkFlow/` | Projects use the workflow now. The evidence is not sufficient for a verdict. |
+| `Tested_WorkFlow/` | A Closed revision passed: three or more projects report that it helped. |
+| `Rejected_WorkFlow/` | The newest revision with evidence failed, or the owner rejected the workflow. Nobody deletes it. |
 
-The path to one revision of a workflow has five parts:
-
-```
-<Stage>_WorkFlow/<Name>_WorkFlow/<Target>/Revision_<NNNN>_<Status>/
-```
-
-- `<Name>`: the name of the workflow, for example `LimitedTokens`.
-- `<Target>`: the type of project that the workflow is for, for example `WebApp`.
-- `<NNNN>`: the revision number, four digits, from `0001` to `9999`.
-- `<Status>`: `Closed` or `Working`.
-
-## The two revision statuses
-
-- **Closed:** the content is permanent. Nobody changes a Closed revision, even if it has errors.
-  You can use a Closed revision in your project and know that it stays the same.
-- **Working:** the content can change at any time. Do not use a Working revision for production work.
-
-Each target has one Working revision at most.
-The rules for closing a revision are in `CONTRIBUTING.md`, section "Close a revision".
+The rules of the stages are in [`CONTRIBUTING.md`](CONTRIBUTING.md), section 9.
 
 ## Use a workflow in your project
 
-1. Select a Closed revision. A revision in `Tested_WorkFlow/` has the most evidence.
-2. Read the `README.md` of the revision.
-3. Copy the contents of its `kit/` folder into the root of your project.
-4. Record the full path and the Git tag of the revision in your project. The tag is the permanent reference.
+1. Select a Closed revision in the index below. A revision with the verdict "Passed" has the most evidence.
+2. Read the `README.md` of the revision. Then copy the contents of its `kit/` folder into your project.
+3. In your project, record the **revision ID**, for example `LimitedTokens/WebApp/r0001`.
+4. After some work, add an evaluation. Follow [`CONTRIBUTING.md`](CONTRIBUTING.md), section 8.
 
-## Current workflows
-
-| Workflow | Target | Stage | Last Closed revision | Working revision |
-| --- | --- | --- | --- | --- |
-| LimitedTokens | WebApp | Evaluating | `Revision_0001_Closed` | `Revision_0002_Working` |
+The revision ID is also a Git tag. The tag always shows the revision as it was closed.
+If a workflow moves to a different stage folder, its path changes, but its content does not change.
+Use the index below to find the current path of an ID.
 
 ## Contribute
 
-Read `CONTRIBUTING.md`. All text in this repository is in English.
+| You want to | Read |
+| --- | --- |
+| Evaluate a workflow that you used | [`CONTRIBUTING.md`](CONTRIBUTING.md), section 8, and [`templates/EVALUATION.md`](templates/EVALUATION.md) |
+| Add a new workflow | [`CONTRIBUTING.md`](CONTRIBUTING.md), section 4, and [`templates/`](templates/) |
+| Improve a workflow | [`CONTRIBUTING.md`](CONTRIBUTING.md), section 5 |
+| Close a revision | [`CONTRIBUTING.md`](CONTRIBUTING.md), section 6 |
+| Understand the stages and the verdicts | [`CONTRIBUTING.md`](CONTRIBUTING.md), section 9 |
+
+All text in this repository is in English. AI agents start at [`AGENTS.md`](AGENTS.md).
+
+## Index of revisions
+
+Generated by `python3 .github/scripts/evaluations.py --write`. Do not edit the table by hand.
+
+<!-- BEGIN GENERATED: revisions -->
+| Revision ID (also the Git tag) | Status | Stage | Path | Counted evaluations | Verdict |
+| --- | --- | --- | --- | --- | --- |
+| `LimitedTokens/WebApp/r0001` | Closed | Evaluating | `Evaluating_WorkFlow/LimitedTokens_WorkFlow/WebApp/Revision_0001_Closed/` | 0 | Open |
+| `LimitedTokens/WebApp/r0002` | Working | Evaluating | `Evaluating_WorkFlow/LimitedTokens_WorkFlow/WebApp/Revision_0002_Working/` | — | — |
+<!-- END GENERATED: revisions -->
 
 ## License
 
-MIT. See `LICENSE`.
+MIT. See [`LICENSE`](LICENSE).

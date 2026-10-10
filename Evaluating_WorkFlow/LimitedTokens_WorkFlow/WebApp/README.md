@@ -21,10 +21,7 @@ The names and the rules that are specific to Consonância are not in the revisio
 | `Revision_0001_Closed/` | Closed on 2026-10-10 | The first general copy of the method. |
 | `Revision_0002_Working/` | Working | A copy of revision 0001. Corrections go here. |
 
-## Evidence log
+## Evaluations
 
-Add one line for each result. Write the date, the project, the revision, and the result.
-
-| Date | Project | Revision | Result |
-| --- | --- | --- | --- |
-| 2026-10-10 | Consonância | before 0001 | Stages 0 to 48 recorded; three contributors in parallel; no project restart. |
+Each project that uses a Closed revision adds a file to `Evaluations/` (`CONTRIBUTING.md`, section 8).
+`STATUS.md` is the summary of the evaluations. A program generates it.

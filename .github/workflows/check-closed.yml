@@ -1,22 +1,30 @@
-name: Closed revisions do not change
+name: Collector checks
 
 on:
   pull_request:
   push:
 
 jobs:
-  check-closed:
+  collector-checks:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Refuse changes inside Closed revisions
-        env:
-          BASE: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}
+      - name: Select the base commit
         run: |
-          if [ -z "$BASE" ] || [ "$BASE" = "0000000000000000000000000000000000000000" ]; then
-            echo "No base commit (new branch). Nothing to compare."
-            exit 0
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            base="${{ github.event.pull_request.base.sha }}"
+          elif [ "${{ github.ref }}" = "refs/heads/main" ]; then
+            base="${{ github.event.before }}"
+          else
+            base="$(git merge-base origin/main HEAD)"
           fi
-          bash .github/scripts/check-closed.sh "$BASE"
+          if [ -z "$base" ] || [ "$base" = "0000000000000000000000000000000000000000" ]; then
+            base="$(git hash-object -t tree /dev/null)"   # the empty tree: the first push
+          fi
+          echo "BASE=$base" >> "$GITHUB_ENV"
+      - name: Closed revisions and evaluations do not change
+        run: bash .github/scripts/check-closed.sh "$BASE"
+      - name: Evaluations, stages, and generated files
+        run: python3 .github/scripts/evaluations.py --check --base "$BASE"
