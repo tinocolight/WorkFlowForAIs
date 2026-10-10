@@ -32,6 +32,7 @@ Each rule has one explanation, in the file that the arrow shows.
 4. A module MUST use only the modules that come before it in the layer order. → `ENGINEERING.md` section 3.
 5. If a program can check a rule, a program MUST check the rule. → `ENGINEERING.md` section 5.
 6. If you do not find what you expect, stop and tell the owner what you did not find. You MUST NOT restart the project from zero. → `METHOD.md` section 9.
+7. You MUST NOT copy a conversation or personal information into a file. Record requests as summaries of actions. → `METHOD.md` section 13.
 
 ## Project facts
 

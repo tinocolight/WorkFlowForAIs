@@ -5,7 +5,8 @@ Usage:
   python3 .github/scripts/evaluations.py --write                 Write each STATUS.md and the index in README.md.
   python3 .github/scripts/evaluations.py --check [--base <commit>]
       Fail if an evaluation file is not valid (with --base: only the files that base..HEAD adds), if a workflow is not
-      in the stage folder that the evaluations give, or if a generated file is not current.
+      in the stage folder that the evaluations give, if a generated file is not current, or if a file contains an email
+      address.
 Python standard library only.
 """
 import datetime
@@ -244,6 +245,23 @@ def added_files(base):
     return {line.split('\t')[1] for line in res.stdout.splitlines() if line.startswith('A\t')}
 
 
+EMAIL = re.compile(r'[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,}')
+
+
+def personal_data():
+    """An email address in a tracked text file is personal information (CONTRIBUTING.md, section 3)."""
+    files = subprocess.run(['git', 'ls-files'], capture_output=True, text=True, cwd=ROOT, check=True).stdout.split('\n')
+    errors = []
+    for f in filter(None, files):
+        try:
+            text = open(os.path.join(ROOT, f), encoding='utf-8').read()
+        except (UnicodeDecodeError, FileNotFoundError):
+            continue
+        for m in EMAIL.finditer(text):
+            errors.append(f'{f}: contains the email address "{m.group(0)}". Remove it (CONTRIBUTING.md, section 3, "Privacy")')
+    return errors
+
+
 def check(workflows, base):
     errors = []
     added = added_files(base) if base else None
@@ -264,6 +282,7 @@ def check(workflows, base):
                 if added is None or rel in added:
                     errors.append(f'{rel}: {why}')
     errors += [f'the workflow {n} is in more than one stage: {", ".join(s)}' for n, s in names.items() if len(s) > 1]
+    errors += personal_data()
     for path, text in generated(workflows).items():
         full = os.path.join(ROOT, path)
         if not os.path.isfile(full) or open(full, encoding='utf-8').read() != text:
