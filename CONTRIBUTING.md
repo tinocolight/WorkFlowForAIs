@@ -122,10 +122,11 @@ Run the check on your computer before you push:
 bash .github/scripts/check-closed.sh origin/main
 ```
 
-The check accepts:
+Each Closed revision on the base MUST exist after the change, with the same files and the same content.
+The check compares the Git tree of each Closed folder. The check accepts:
 
-- new files in a new `Revision_<NNNN>_Closed/` folder (the close of a revision);
-- the move of a Closed revision to a different stage, if no file content changes.
+- a new `Revision_<NNNN>_Closed/` folder (the close of a revision);
+- the move of a Closed revision to a different stage folder, with no other change.
 
 The check refuses all other changes inside a `Revision_<NNNN>_Closed/` folder that exists on the base.
 The check is effective only if the owner protects `main` and requires the check to pass before a merge.
