@@ -10,8 +10,8 @@ const app = document.getElementById('app');
 const SCORES = ['+2', '+1', '0', '-1', '-2'];
 const SCORE_LABEL = { '+2': 'Much better', '+1': 'Better', '0': 'The same', '-1': 'Worse', '-2': 'Much worse' };
 const PRIOR_VOTES = 3; // the score counts this many neutral votes (5.0) in addition to the real ones
-const STAGE_DIR = /^([A-Za-z]+)_WorkFlow$/;
-const REVISION_DIR = /^Revision_(\d{4})_([A-Za-z]+)$/;
+const ROOT_DIR = 'Workflows';
+const REVISION_DIR = /^r(\d{4})$/;
 let REPO = null;
 let SHA = null;
 let DATA = null;
@@ -63,73 +63,80 @@ function summary(text) {
 }
 
 function parseStatus(text) {
-  const level = (text.match(/^- Level of this target: (\w+)/m) || [])[1] || null;
-  const verdicts = {};
-  for (const m of text.matchAll(/^\| (\d{4}) \|.*\| (\w+) \|$/gm)) verdicts[m[1]] = m[2];
-  const notCounted = new Set([...text.matchAll(/^- `([^`]+)`: /gm)].map((m) => m[1]));
-  return { level, verdicts, notCounted };
+  const line = (label) => (text.match(new RegExp(`^- ${label}: (\\w+)`, 'm')) || [])[1] || null;
+  const revisions = {};
+  for (const m of text.matchAll(/^\| r(\d{4}) \| ([^|]+) \| ([^|]+) \| ([^|]+) \|.*\| (\w+) \| (\w+) \|$/gm)) {
+    revisions[m[1]] = { basedOn: m[2].trim(), author: m[3].trim(), added: m[4].trim(), verdict: m[5], role: m[6] };
+  }
+  const yanks = {};
+  const yankPart = text.split('## Yanked revisions')[1] || '';
+  for (const m of yankPart.split('##')[0].matchAll(/^- r(\d{4}): ([^:]+): (.*)$/gm)) yanks[m[1]] = `${m[2]}: ${m[3]}`;
+  const notCountedPart = (text.split('## Evaluations that do not count')[1] || '').split('##')[0];
+  const notCounted = new Set([...notCountedPart.matchAll(/^- `([^`]+)`: /gm)].map((m) => m[1]));
+  return { stage: line('Stage of this target'), workflowStage: line('Stage of the workflow'), recommended: line('Recommended for new projects'), revisions, yanks, notCounted };
 }
 
 async function load() {
   const commit = await api('/commits/HEAD');
   SHA = commit.sha;
   const tree = (await api(`/git/trees/${SHA}?recursive=1`)).tree;
-  const workflows = new Map();
   const files = tree.filter((e) => e.type === 'blob').map((e) => e.path);
+  const workflows = new Map();
   for (const e of tree) {
     const parts = e.path.split('/');
-    const stage = parts[0] && parts[0].match(STAGE_DIR);
-    if (!stage || parts.length < 2 || !parts[1].endsWith('_WorkFlow')) continue;
-    const key = parts[1];
-    if (!workflows.has(key)) {
-      workflows.set(key, { name: key.replace(/_WorkFlow$/, ''), stage: stage[1], path: `${parts[0]}/${parts[1]}`, targets: new Map() });
-    }
-    const w = workflows.get(key);
-    if (parts.length >= 4 && e.type === 'tree') {
-      const rev = parts[3].match(REVISION_DIR);
-      if (!rev || parts.length !== 4) continue;
-      if (!w.targets.has(parts[2])) w.targets.set(parts[2], { name: parts[2], path: parts.slice(0, 3).join('/'), revisions: [], evaluations: [] });
-      w.targets.get(parts[2]).revisions.push({ number: rev[1], status: rev[2], path: e.path });
-    }
+    if (parts[0] !== ROOT_DIR || parts.length < 2 || e.type !== 'tree') continue;
+    if (parts.length === 2) workflows.set(parts[1], { name: parts[1], path: e.path, targets: new Map() });
+    const w = workflows.get(parts[1]);
+    if (!w) continue;
+    if (parts.length === 3) w.targets.set(parts[2], { name: parts[2], path: e.path, revisions: [], evaluations: [], status: null });
+    const rev = parts.length === 4 && parts[3].match(REVISION_DIR);
+    if (rev && w.targets.has(parts[2])) w.targets.get(parts[2]).revisions.push({ number: rev[1], path: e.path });
   }
   const jobs = [];
   for (const w of workflows.values()) {
     w.summary = '';
-    jobs.push(raw(`${w.path}/README.md`).then((t) => { w.summary = summary(t); }).catch(() => {}));
+    jobs.push(raw(`${w.path}/README.md`).then((t) => { w.summary = summary(t); w.derived = (t.match(/^Derived from: (\S+)/m) || [])[1] || null; }).catch(() => {}));
     for (const t of w.targets.values()) {
-      t.level = null; t.verdicts = {}; t.notCounted = new Set();
-      if (files.includes(`${t.path}/STATUS.md`)) {
-        jobs.push(raw(`${t.path}/STATUS.md`).then((s) => Object.assign(t, parseStatus(s))).catch(() => {}));
-      }
+      if (files.includes(`${t.path}/STATUS.md`)) jobs.push(raw(`${t.path}/STATUS.md`).then((s) => { t.status = parseStatus(s); }).catch(() => {}));
       for (const f of files.filter((p) => p.startsWith(`${t.path}/Evaluations/`) && p.endsWith('.md'))) {
         jobs.push(raw(f).then((text) => t.evaluations.push({ file: f.split('/').pop(), ...parseFields(text) })).catch(() => {}));
       }
-      t.files = files.filter((p) => p.startsWith(`${t.path}/Revision_`));
+      t.files = files.filter((p) => p.startsWith(`${t.path}/r`));
     }
   }
   await Promise.all(jobs);
   const list = [];
   for (const w of workflows.values()) {
-    const targets = [...w.targets.values()];
+    const targets = [...w.targets.values()].filter((t) => t.revisions.length || t.status);
+    let stage = null;
     for (const t of targets) {
-      t.evaluations.forEach((e) => { e.counted = !t.notCounted.has(e.file); });
+      const st = t.status || { revisions: {}, yanks: {}, notCounted: new Set() };
+      stage = stage || st.workflowStage;
+      t.level = st.stage;
+      t.recommended = st.recommended && st.recommended !== 'none' ? st.recommended.replace(/^r/, '') : null;
+      t.evaluations.forEach((e) => { e.counted = !st.notCounted.has(e.file); });
       t.evaluations.sort((a, b) => (b.Date || '').localeCompare(a.Date || ''));
-      t.revisions.sort((a, b) => b.number.localeCompare(a.number) || a.status.localeCompare(b.status));
+      t.revisions.sort((a, b) => b.number.localeCompare(a.number));
       for (const r of t.revisions) {
+        const info = st.revisions[r.number] || {};
         r.id = `${w.name}/${t.name}/r${r.number}`;
-        r.verdict = r.status === 'Closed' ? (t.verdicts[r.number] || 'Open') : null;
-        const evs = t.evaluations.filter((e) => e.counted && e.Revision === r.number && r.status === 'Closed');
+        r.verdict = info.verdict || 'Open';
+        r.role = info.role || 'new';
+        r.basedOn = info.basedOn || '';
+        r.yank = st.yanks[r.number] || null;
+        const evs = t.evaluations.filter((e) => e.counted && e.Revision === r.number);
         r.rating = rating(evs);
         r.medians = Object.fromEntries(['Ease of use', 'Goal contribution', 'Overall effect'].map((f) => [f, median(evs.map((e) => Number(e[f])))]));
       }
     }
     const counted = targets.flatMap((t) => t.evaluations.filter((e) => e.counted));
     list.push({
-      ...w, targets, rating: rating(counted), distribution: distribution(counted),
+      ...w, stage: stage || 'Theorized', targets, rating: rating(counted), distribution: distribution(counted),
       agents: [...new Set(counted.flatMap((e) => (e.Agents || '').split(', ').filter((a) => a && a !== 'none').map((a) => a.split(' in ')[0])))].sort(),
     });
   }
-  const stages = [...new Set(list.map((w) => w.stage))];
+  const order = ['Tested', 'Evaluating', 'Theorized', 'Rejected'];
+  const stages = [...new Set(list.map((w) => w.stage))].sort((a, b) => order.indexOf(a) - order.indexOf(b));
   return { workflows: list, stages };
 }
 
@@ -204,10 +211,10 @@ function zip(entries) {
 }
 
 async function download(button) {
-  const { target, number, status } = button.dataset;
+  const { target, number } = button.dataset;
   const w = DATA.workflows.find((x) => x.targets.some((t) => t.path === target));
   const t = w.targets.find((x) => x.path === target);
-  const folder = `${target}/Revision_${number}_${status}`;
+  const folder = `${target}/r${number}`;
   const label = button.textContent;
   button.textContent = 'Preparing…';
   button.disabled = true;
@@ -221,7 +228,7 @@ async function download(button) {
     const url = URL.createObjectURL(zip(entries));
     const a = document.createElement('a');
     a.href = url;
-    a.download = `${w.name}-${t.name}-r${number}${status === 'Closed' ? '' : `-${status.toLowerCase()}`}.zip`;
+    a.download = `${w.name}-${t.name}-r${number}.zip`;
     document.body.append(a);
     a.click();
     a.remove();
@@ -243,14 +250,15 @@ function chip(r) {
     + `<span class="votes">${r.votes} evaluation${r.votes === 1 ? '' : 's'}</span></div>`;
 }
 const pill = (text) => `<span class="pill ${esc(text)}">${esc(text)}</span>`;
-const latestClosed = (w) => w.targets.flatMap((t) => t.revisions.filter((r) => r.status === 'Closed')).sort((a, b) => b.number.localeCompare(a.number))[0];
+const latestClosed = (w) => w.targets.flatMap((t) => t.revisions.filter((r) => r.role === 'recommended'))[0]
+  || w.targets.flatMap((t) => t.revisions.filter((r) => !['yanked', 'tainted'].includes(r.role))).sort((a, b) => b.number.localeCompare(a.number))[0];
 const signed = (v) => `<b class="${String(v).startsWith('+') ? 'pos' : String(v).startsWith('-') ? 'neg' : ''}">${esc(v)}</b>`;
 
 function chart() {
   app.innerHTML = `
     <h1>Workflows for AI agents, rated by real projects</h1>
     <p class="lead">A workflow is a small set of Markdown files that tells AI agents how to work in a project.
-      Pick one, download a Closed revision, use it, and then add your evaluation.</p>
+      Pick one, download its recommended revision, use it, and then add your evaluation.</p>
     <div class="tools" role="search">
       <input id="q" type="search" placeholder="Search workflows" aria-label="Search workflows">
       <select id="stage" aria-label="Stage"><option value="">All stages</option>${DATA.stages.map((s) => `<option>${esc(s)}</option>`).join('')}</select>
@@ -278,7 +286,7 @@ function chart() {
           <div class="row-title"><h3>${esc(w.name)}</h3>${pill(w.stage)}</div>
           <p class="row-sum">${esc(w.summary)}</p>
           <div class="meta"><span>Targets: ${w.targets.map((t) => esc(t.name)).join(', ') || '—'}</span>
-            ${last ? `<span>Latest Closed: r${esc(last.number)}</span>` : ''}
+            ${last ? `<span>${last.role === 'recommended' ? 'Recommended' : 'Newest'}: r${esc(last.number)}</span>` : ''}
             ${w.agents.length ? `<span>Used with: ${w.agents.map(esc).join(', ')}</span>` : ''}</div>
         </div>
         ${chip(w.rating)}
@@ -336,7 +344,7 @@ function detail(name) {
       <div class="panel"><h3>Overall effect, by evaluation</h3><p class="muted" style="margin:4px 0 12px">Compared with the usual way of work of each project.</p>${bars(w.distribution)}</div>
       <div class="panel"><h3>Before you use a revision</h3>
         <ol class="steps">
-          <li>Prefer a <b>Closed</b> revision. Its content never changes.</li>
+          <li>Prefer the revision with the role <b>recommended</b>. A revision never changes after the merge.</li>
           <li>Extract the zip into the root of your project.</li>
           <li>Record the revision ID in your project${last ? `, for example <code>${esc(last.id)}</code>` : ''}.</li>
           <li>After some work, <a href="${repoUrl('/blob/HEAD/CONTRIBUTING.md')}">add an evaluation</a>.</li>
@@ -346,21 +354,22 @@ function detail(name) {
     ${w.targets.map((t) => `
       <h2>${esc(t.name)}${t.level ? ` <span class="muted" style="font-weight:500;font-size:15px">· level: ${esc(t.level)}</span>` : ''}</h2>
       <div class="panel table-wrap"><table class="revisions">
-        <thead><tr><th>Revision</th><th>Status</th><th>Score</th><th>Medians: ease / goal / overall</th><th></th></tr></thead>
+        <thead><tr><th>Revision</th><th>Role</th><th>Based on</th><th>Score</th><th>Medians: ease / goal / overall</th><th></th></tr></thead>
         <tbody>${t.revisions.map((r) => `<tr>
           <td><a href="${treeUrl(r.path)}">${esc(r.id)}</a></td>
-          <td data-label="Status">${pill(r.verdict || r.status)}</td>
+          <td data-label="Role">${pill(r.role)}${r.yank ? `<div class="muted small">${esc(r.yank)}</div>` : ''}</td>
+          <td data-label="Based on">${esc(r.basedOn || '—')}</td>
           <td data-label="Score">${r.rating.score === null ? '<span class="muted">—</span>' : `${r.rating.score.toFixed(1)} <span class="muted">(${r.rating.votes})</span>`}</td>
           <td data-label="Medians: ease / goal / overall">${['Ease of use', 'Goal contribution', 'Overall effect'].map((f) => (r.medians[f] === null ? '—' : (r.medians[f] > 0 ? '+' : '') + r.medians[f])).join(' / ')}</td>
-          <td><button class="btn${r.status === 'Closed' ? '' : ' ghost'}" data-target="${esc(t.path)}" data-number="${esc(r.number)}" data-status="${esc(r.status)}"
-            ${r.status === 'Closed' ? '' : 'title="This revision can change at any time"'}>Download zip</button></td>
+          <td><button class="btn${['yanked', 'tainted'].includes(r.role) ? ' ghost' : ''}" data-target="${esc(t.path)}" data-number="${esc(r.number)}"
+            ${['yanked', 'tainted'].includes(r.role) ? 'title="Do not use this revision in a new project"' : ''}>Download zip</button></td>
         </tr>`).join('')}</tbody>
       </table></div>
-      ${t.revisions.some((r) => r.status !== 'Closed') ? '<p class="notice">A revision that is not Closed can change at any time. Use it only to test or to contribute.</p>' : ''}
+      ${t.revisions.some((r) => ['yanked', 'tainted'].includes(r.role)) ? '<p class="notice">A yanked or tainted revision stays here for the projects that use it. Do not use it in a new project.</p>' : ''}
     `).join('')}
     <h2>Evaluations</h2>
     <div class="reviews">${evals.length ? evals.map(review).join('')
-      : `<div class="empty">No evaluation yet. Use a Closed revision in a project, then
+      : `<div class="empty">No evaluation yet. Use a revision in a project, then
          <a href="${repoUrl('/blob/HEAD/templates/EVALUATION.md')}">add the first evaluation</a>.</div>`}</div>`;
   app.querySelectorAll('button[data-target]').forEach((b) => b.addEventListener('click', () => download(b)));
 }
@@ -371,9 +380,9 @@ function how() {
     <p class="lead">The collector accepts workflows of all kinds. Evidence from real projects decides which ones rise.
       This page reads the repository each time it opens.</p>
     <div class="grid2">
-      <div class="panel"><h3>Revisions</h3><p>Each workflow has numbered revisions. A <b>Closed</b> revision never changes, and it has a Git tag with its ID.
-        A <b>Working</b> revision can change at any time.</p></div>
-      <div class="panel"><h3>Evaluations</h3><p>A project that uses a Closed revision adds one short file with fixed fields. Each project counts one time for each revision.</p></div>
+      <div class="panel"><h3>Revisions</h3><p>Each workflow has numbered revisions. A revision never changes after the merge, and it has a Git tag with its ID.
+        Each revision has a role: ${['recommended', 'candidate', 'superseded', 'dormant', 'tainted', 'yanked'].map(pill).join(' ')}</p></div>
+      <div class="panel"><h3>Evaluations</h3><p>A project that uses a revision adds one short file with fixed fields. Each project counts one time for each revision.</p></div>
       <div class="panel"><h3>Score</h3><p>The score is the mean "Overall effect" on a scale from 0 to 10. With few evaluations, the score
         moves toward 5, so that one enthusiastic project cannot put a workflow at the top.</p></div>
       <div class="panel"><h3>Stages</h3><p>${DATA.stages.map(pill).join(' ')} A program computes the stage from the evaluations.

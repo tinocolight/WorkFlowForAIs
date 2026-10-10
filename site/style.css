@@ -85,7 +85,11 @@ h3 { font-size: 16px; margin: 0; }
 .pill.Passed { color: var(--good); }
 .pill.Failed { color: var(--bad); }
 .pill.Open { color: var(--muted); }
-.pill.Working { color: var(--mid); }
+.pill.recommended, .pill.passed { color: var(--good); }
+.pill.candidate { color: var(--accent); }
+.pill.superseded, .pill.dormant, .pill.new { color: var(--muted); }
+.pill.yanked, .pill.tainted { color: var(--bad); }
+.small { font-size: 12px; margin-top: 4px; }
 
 .score { display: grid; justify-items: center; gap: 2px; min-width: 74px; }
 .score-chip {
