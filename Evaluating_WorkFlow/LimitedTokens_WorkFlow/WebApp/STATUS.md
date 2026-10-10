@@ -12,6 +12,7 @@ The rules are in `CONTRIBUTING.md`, section 9.
 | Revision | Tag | Counted evaluations | Project owners | Overall effect +1 or +2 | Harm (-1, -2, or switched) | Median ease of use | Median goal contribution | Verdict |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | 0001 | `LimitedTokens/WebApp/r0001` | 0 | 0 | 0 | 0 | — | — | Open |
+| 0002 | `LimitedTokens/WebApp/r0002` | 0 | 0 | 0 | 0 | — | — | Open |
 
 ## Evaluations that do not count
 
