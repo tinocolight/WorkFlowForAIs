@@ -1,0 +1,22 @@
+name: Closed revisions do not change
+
+on:
+  pull_request:
+  push:
+
+jobs:
+  check-closed:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Refuse changes inside Closed revisions
+        env:
+          BASE: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}
+        run: |
+          if [ -z "$BASE" ] || [ "$BASE" = "0000000000000000000000000000000000000000" ]; then
+            echo "No base commit (new branch). Nothing to compare."
+            exit 0
+          fi
+          bash .github/scripts/check-closed.sh "$BASE"
