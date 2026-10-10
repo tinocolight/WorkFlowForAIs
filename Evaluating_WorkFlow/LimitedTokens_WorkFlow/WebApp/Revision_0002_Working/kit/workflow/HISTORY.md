@@ -18,7 +18,7 @@ Each closed stage moves here from `STATE.md` with no change (`METHOD.md` section
 
 ### Conversation of YYYY-MM-DD: <subject>
 
-Request of the owner: "<the words of the owner>"
+Request (summary of actions): <what to do, in your words, with no personal information>
 Decision: <the decision, and the reason>
 -->
 
@@ -28,7 +28,7 @@ Decision: <the decision, and the reason>
 
 ## Stage N: <title> (YYYY-MM-DD) CLOSED
 
-**Request of the owner** (YYYY-MM-DD): "<the words of the owner>"
+**Request** (YYYY-MM-DD, summary of actions): <what to do, in your words>
 
 **Findings:** <what the contributor found before the change>
 

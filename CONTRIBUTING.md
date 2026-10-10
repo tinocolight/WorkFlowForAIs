@@ -63,9 +63,9 @@ This repository is public. Each commit stays in the Git history, also after a la
 
 1. You MUST NOT add parts of a conversation between a person and an AI: no prompts, no replies, no chat logs, and no screenshots of a chat.
 2. You MUST NOT add personal information: real names, email addresses, telephone numbers, postal addresses, passwords, tokens, or keys.
-3. To identify a person, use the Git account name, for example the GitHub user name. Do not use the real name.
+3. To identify a person, use the Git account name (for example the GitHub user name), a role, or a pseudonym. Do not use the real name.
 4. A file in a `kit/` folder MUST contain placeholders, not content from a real project.
-5. To record a decision, describe the decision in your own words. Do not quote the conversation.
+5. To record a request or a decision, write a summary of actions in your own words, with no personal details. Do not quote the conversation.
 6. If you added personal information by mistake, tell the owner immediately. A new commit does not remove it from the history.
 
 The check of section 10 refuses a file that contains an email address.

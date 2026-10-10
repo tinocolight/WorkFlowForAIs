@@ -20,7 +20,7 @@ None.
 
 ### Stage N: <title> (IN PROGRESS, YYYY-MM-DD)
 
-Request of the owner (YYYY-MM-DD): "<the words of the owner>"
+Request (YYYY-MM-DD, summary of actions): <what to do, in your words>
 
 Done when: <results that a person or a program can check>
 

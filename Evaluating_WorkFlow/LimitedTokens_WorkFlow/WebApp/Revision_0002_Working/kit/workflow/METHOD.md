@@ -66,7 +66,7 @@ Use each term with this meaning only. Do not use a synonym.
 1. Find the highest stage number in all branches. Your stage number is that number plus one.
 2. In `STATE.md`, section "Current stage", write the stage before any code:
    - the title, the number, the text "(IN PROGRESS, YYYY-MM-DD)";
-   - the request of the owner, word for word, in quotation marks;
+   - the request, as a summary of actions in your words (section 13);
    - "Done when:" and the results that a person or a program can check;
    - one checkbox for each block, and one checkbox for the close.
 3. Commit and push the stage record.
@@ -138,7 +138,7 @@ One contributor (section 3) does the evaluation after each four interactions.
 1. If you do not find a file or a result that you expect, stop. Tell the owner what you expected and what you found.
 2. You MUST NOT restart the project from zero.
 3. If a decision belongs to the owner, stop and ask. Give the options and your recommendation.
-4. If the owner gives a decision, record it in the backlog item, with the date and the words of the owner.
+4. If the owner gives a decision, record the decision and the date in the backlog item, in your words (section 13).
 
 ## 10. Token rules
 
@@ -169,3 +169,14 @@ Each line that an agent reads costs tokens in each session. Use these rules to r
 2. Use the words of `GLOSSARY.md`. Search the glossary before you name a part of the application.
 3. Write the result first. Then write the evidence.
 4. If you need a decision, ask one question with options.
+
+## 13. Privacy
+
+The files of the project can become public. Each commit stays in the Git history, also after a later commit deletes the text.
+
+1. You MUST NOT copy a conversation into a file. Do not quote the owner or an AI.
+2. Record a request or a decision as a summary of actions: "Add X", "Remove Y", "Use Z because W".
+3. Remove personal details from the summary: names, places, dates of birth, health, money, and opinions about people.
+4. Identify a person by role ("owner", "contributor"), by Git account name, or by a pseudonym. You MUST NOT write a real name.
+5. You MUST NOT write email addresses, telephone numbers, postal addresses, passwords, tokens, or keys.
+6. If personal information enters a commit, stop and tell the owner. A new commit does not remove it from the history.

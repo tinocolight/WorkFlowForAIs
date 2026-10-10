@@ -35,4 +35,4 @@ For each rule that the existing code breaks, the agent records the current count
 
 ## Changes since the previous revision
 
-None yet. Add one line for each change.
+- Privacy: requests and decisions are summaries of actions, with no quotes and no personal information; people have a role, a Git account name, or a pseudonym (`METHOD.md` section 13, `AGENTS.md` rule 7).
