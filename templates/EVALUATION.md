@@ -11,6 +11,7 @@ Keep the order of the lines. Do not add lines. Replace each value. The program r
 - Agents: claude-opus-5-5 in claude-code
 - Project owner: tinocolight
 - Project: consonancia
+- Repository: private
 - Work type: extend
 - Project state: active
 - Active days: 30
@@ -30,6 +31,7 @@ Keep the order of the lines. Do not add lines. Replace each value. The program r
 | Agents | Each AI that used the workflow, as `<model-id> in <tool>`, separated by `, `. Use the model ID of the provider API. Write `none` if no AI used it. |
 | Project owner | The Git account name of the owner of the project, for example the GitHub user name, in lowercase. Do not write a real name. |
 | Project | The name of the project: lowercase letters, digits, and hyphens. Use the same value in each evaluation of the project. |
+| Repository | Where the project is. `public`: a Git repository that everybody can see. `private`: a Git repository with restricted access. `none`: the project is not in Git. Do not write the address of a private repository. |
 | Work type | `build`: a new project. `extend`: new functions in an existing project. `fix`: corrections. `refactor`: a new structure, with no change in behavior. `mixed`: no type is more than half of the work. |
 | Project state | `active`: work in the last 30 days. `paused`: no work for 30 days or more. `finished`: the project reached its goal. `stopped`: the project ended before its goal. `switched`: the project continues without this workflow. |
 | Active days | The count of different dates with a commit since the project started to use the revision. Command: `git log --since=<start-date> --format=%ad --date=short \| sort -u \| wc -l`. |

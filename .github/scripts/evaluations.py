@@ -24,6 +24,7 @@ SLUG = r'[a-z0-9]+(?:-[a-z0-9]+)*'
 SCORE = r'(?:-2|-1|0|\+1|\+2)'
 WORK_TYPES = ['build', 'extend', 'fix', 'refactor', 'mixed']
 STATES = ['active', 'paused', 'finished', 'stopped', 'switched']
+REPOSITORIES = ['public', 'private', 'none']   # where the project that used the workflow is: a Git repository that all can see, one with restricted access, or no Git
 MIN_PROJECTS = 3        # counted evaluations (one per project) before a revision can pass or fail
 MIN_OWNERS = 2          # different project owners for a pass
 BEGIN, END = '<!-- BEGIN GENERATED: revisions -->', '<!-- END GENERATED: revisions -->'
@@ -40,6 +41,7 @@ FIELDS = [   # name, test of the value, rule for the error message
      '"<model-id> in <tool>", separated by ", ", or "none"'),
     ('Project owner', lambda v: re.fullmatch(SLUG, v) and len(v) <= 39, 'lowercase letters, digits, and hyphens'),
     ('Project', lambda v: re.fullmatch(SLUG, v) and len(v) <= 30, 'lowercase letters, digits, and hyphens'),
+    ('Repository', lambda v: v in REPOSITORIES, ' | '.join(REPOSITORIES)),
     ('Work type', lambda v: v in WORK_TYPES, ' | '.join(WORK_TYPES)),
     ('Project state', lambda v: v in STATES, ' | '.join(STATES)),
     ('Active days', lambda v: re.fullmatch(r'[1-9]\d*', v), 'an integer, 1 or more'),
