@@ -28,7 +28,7 @@ Keep the order of the lines. Do not add lines. Replace each value. The program r
 | Revision | The four digits of a Closed revision of the target. |
 | Date | The date that you write the file: YYYY-MM-DD. |
 | Agents | Each AI that used the workflow, as `<model-id> in <tool>`, separated by `, `. Use the model ID of the provider API. Write `none` if no AI used it. |
-| Project owner | The account or the name of the owner of the project: lowercase letters, digits, and hyphens. |
+| Project owner | The Git account name of the owner of the project, for example the GitHub user name, in lowercase. Do not write a real name. |
 | Project | The name of the project: lowercase letters, digits, and hyphens. Use the same value in each evaluation of the project. |
 | Work type | `build`: a new project. `extend`: new functions in an existing project. `fix`: corrections. `refactor`: a new structure, with no change in behavior. `mixed`: no type is more than half of the work. |
 | Project state | `active`: work in the last 30 days. `paused`: no work for 30 days or more. `finished`: the project reached its goal. `stopped`: the project ended before its goal. `switched`: the project continues without this workflow. |
@@ -38,3 +38,5 @@ Keep the order of the lines. Do not add lines. Replace each value. The program r
 | Overall effect | The net effect, with all costs (time, tokens, errors), compared with your usual way of work. `-2`: much worse. `-1`: worse. `0`: the same. `+1`: better. `+2`: much better. |
 | Strength | One sentence of 1 to 25 words that ends with a period, or `none`. |
 | Problem | One sentence of 1 to 25 words that ends with a period, or `none`. |
+
+In Strength and Problem, use your own words. Do not quote a conversation. Do not write personal information (`CONTRIBUTING.md`, section 3).

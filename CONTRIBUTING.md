@@ -57,6 +57,19 @@ For this repository:
 2. The first words of a pull request description MUST be "Merge allowed" or "Do not merge yet".
 3. A pull request MUST pass the checks of section 10.
 
+### Privacy
+
+This repository is public. Each commit stays in the Git history, also after a later commit deletes the file.
+
+1. You MUST NOT add parts of a conversation between a person and an AI: no prompts, no replies, no chat logs, and no screenshots of a chat.
+2. You MUST NOT add personal information: real names, email addresses, telephone numbers, postal addresses, passwords, tokens, or keys.
+3. To identify a person, use the Git account name, for example the GitHub user name. Do not use the real name.
+4. A file in a `kit/` folder MUST contain placeholders, not content from a real project.
+5. To record a decision, describe the decision in your own words. Do not quote the conversation.
+6. If you added personal information by mistake, tell the owner immediately. A new commit does not remove it from the history.
+
+The check of section 10 refuses a file that contains an email address.
+
 ## 4. Add a new workflow
 
 1. Create `Theorized_WorkFlow/<Name>_WorkFlow/`. Copy `templates/WORKFLOW_README.md` to its `README.md`.
@@ -146,6 +159,6 @@ python3 .github/scripts/evaluations.py --check --base origin/main
 ```
 
 1. `check-closed.sh` refuses a change to a Closed revision or to an existing evaluation file. A stage move is accepted.
-2. `evaluations.py --check` refuses an evaluation file that is not valid, a workflow in the wrong stage folder, and a generated file that is not current.
+2. `evaluations.py --check` refuses an evaluation file that is not valid, a workflow in the wrong stage folder, a generated file that is not current, and a file that contains an email address.
 
 The checks are effective only if the owner protects `main` and requires the check "collector-checks" before a merge.
