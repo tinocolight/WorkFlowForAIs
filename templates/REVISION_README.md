@@ -1,23 +1,21 @@
-# <Name> / <Target> / Revision <NNNN>
+# <Name> / <Target> / rNNNN
 
-Status: Working
-Tag: none. A revision receives its tag when it closes (`CONTRIBUTING.md`, section 6).
-Origin: <a copy of `Revision_<NNNN>_Closed/`, or "new">
+Based on: rNNNN
+Author: <your Git account name>
 
-The content of a Working revision can change at any time. Do not use it for production work.
+<One or two sentences: what this revision changes, and why.>
+
+## Changes
+
+- <One line for each change.>
+
+## Upgrade from the base
+
+<What a project that uses the base revision must do. Write "No action." if nothing.>
 
 ## Contents
 
 ```
-kit/          Copy the contents of this folder into the root of your project.
-  <file>      <one sentence: what the file is for>
+kit/          Extract into the root of the project.
+  <file>      <one sentence> (replace on upgrade | project-owned: never replace)
 ```
-
-## Adopt the revision in a project
-
-1. Copy the contents of `kit/` into the root of the project repository.
-2. <the next step>
-
-## Changes since the previous revision
-
-None yet. Add one line for each change.

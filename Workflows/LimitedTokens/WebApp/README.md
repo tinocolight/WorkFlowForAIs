@@ -16,13 +16,10 @@ The names and the rules that are specific to Consonância are not in the revisio
 
 ## Revisions
 
-| Revision | Status | Content |
-| --- | --- | --- |
-| `Revision_0001_Closed/` | Closed on 2026-10-10 | The first general copy of the method. |
-| `Revision_0002_Closed/` | Closed on 2026-10-10 | Privacy: requests are summaries of actions; people are roles, Git account names, or pseudonyms. |
-| `Revision_0003_Working/` | Working | A copy of revision 0002. Corrections go here. |
+`STATUS.md` lists each revision with its base, its verdict, and its role. A program writes it after each merge.
+Revisions r0001 and r0002 are from before October 2026: they have no "Based on" line, so each one is based on the previous number.
 
 ## Evaluations
 
-Each project that uses a Closed revision adds a file to `Evaluations/` (`CONTRIBUTING.md`, section 8).
+Each project that uses a revision adds a file to `Evaluations/` (`CONTRIBUTING.md`, section 8).
 `STATUS.md` is the summary of the evaluations. A program generates it.
