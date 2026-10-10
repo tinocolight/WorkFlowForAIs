@@ -502,6 +502,8 @@ def check_text_files():
         except (UnicodeDecodeError, FileNotFoundError, IsADirectoryError):
             continue
         for m in EMAIL.finditer(text):
+            if m.group(0).endswith('@users.noreply.github.com'):
+                continue   # the address of the GitHub Actions bot is not personal information
             errors.append(f'{f}: contains the email address "{m.group(0)}". Remove it (section 3, "Privacy").')
         for i, ch in enumerate(text):
             cat = unicodedata.category(ch)

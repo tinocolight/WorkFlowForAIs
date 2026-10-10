@@ -2,7 +2,11 @@ name: Collector checks
 
 on:
   pull_request:
+    types: [opened, synchronize, reopened, labeled, unlabeled]
   push:
+
+permissions:
+  contents: read
 
 jobs:
   collector-checks:
@@ -24,7 +28,17 @@ jobs:
             base="$(git hash-object -t tree /dev/null)"   # the empty tree: the first push
           fi
           echo "BASE=$base" >> "$GITHUB_ENV"
-      - name: Closed revisions and evaluations do not change
-        run: bash .github/scripts/check-closed.sh "$BASE"
-      - name: Evaluations, stages, and generated files
-        run: python3 .github/scripts/evaluations.py --check --base "$BASE"
+      - name: Take the checker from the base branch
+        # A pull request cannot change the rules that check it: the program comes from the base (CONTRIBUTING.md, section 12).
+        run: |
+          if git cat-file -e "$BASE:.github/scripts/collector.py" 2>/dev/null; then
+            git show "$BASE:.github/scripts/collector.py" > "$RUNNER_TEMP/collector.py"
+          else
+            cp .github/scripts/collector.py "$RUNNER_TEMP/collector.py"   # the first version of the program
+          fi
+      - name: All the rules of the collector
+        env:
+          AUTHOR: ${{ github.event.pull_request.user.login }}
+          OWNER: ${{ github.repository_owner }}
+          LABELS: ${{ join(github.event.pull_request.labels.*.name, ',') }}
+        run: python3 "$RUNNER_TEMP/collector.py" --check --base "$BASE" --author "$AUTHOR" --owner "$OWNER" --labels "$LABELS"
