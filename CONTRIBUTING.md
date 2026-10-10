@@ -98,8 +98,9 @@ After the close, nobody changes the Closed revision. A correction goes into the 
 4. In the new `README.md`, change the status line to `Status: Working`. Clear the list of changes.
 5. Run `python3 .github/scripts/evaluations.py --write`.
 
-After the owner merges the commit, the owner creates the Git tag. The tag is the revision ID:
-`git tag LimitedTokens/WebApp/r0002 <merge-commit>` and `git push origin LimitedTokens/WebApp/r0002`.
+After the merge, GitHub Actions creates the Git tag on the merge commit (`.github/workflows/tag-closed.yml`).
+The tag is the revision ID, for example `LimitedTokens/WebApp/r0002`. Nobody creates the tag by hand.
+An existing tag never changes.
 
 Rename the Working folder. Do not keep a Working folder and a Closed folder with the same number.
 Each number then has one folder and one content.
