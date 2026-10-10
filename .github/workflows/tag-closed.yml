@@ -1,0 +1,28 @@
+name: Tag Closed revisions
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  tag-closed:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Create the missing tag of each Closed revision
+        run: |
+          git ls-tree -r -d --name-only HEAD \
+            | grep -E '^[A-Za-z]+_WorkFlow/[^/]+_WorkFlow/[^/]+/Revision_[0-9]{4}_Closed$' \
+            | while IFS=/ read -r stage workflow target revision; do
+                id="${workflow%_WorkFlow}/${target}/r$(echo "$revision" | cut -d_ -f2)"
+                if git rev-parse -q --verify "refs/tags/$id" >/dev/null; then
+                  echo "exists: $id"
+                else
+                  git tag "$id" HEAD && git push origin "refs/tags/$id" && echo "created: $id"
+                fi
+              done
