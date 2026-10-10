@@ -13,8 +13,8 @@ The rules are in `CONTRIBUTING.md`, section 9.
 
 | Revision | Based on | Author | Added | Counted evaluations | Project owners | Help | Harm | Median ease of use | Median goal contribution | Median compared with previous | Verdict | Role |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| r0002 | r0001 | — | — | 0 | 0 | 0 | 0 | — | — | — | Open | candidate |
-| r0001 | none | — | — | 0 | 0 | 0 | 0 | — | — | — | Open | superseded |
+| r0002 | r0001 | — | 2026-10-10 | 0 | 0 | 0 | 0 | — | — | — | Open | candidate |
+| r0001 | none | — | 2026-10-10 | 0 | 0 | 0 | 0 | — | — | — | Open | superseded |
 
 ## Yanked revisions
 

@@ -21,5 +21,5 @@ Revisions r0001 and r0002 are from before October 2026: they have no "Based on" 
 
 ## Evaluations
 
-Each project that uses a Closed revision adds a file to `Evaluations/` (`CONTRIBUTING.md`, section 8).
+Each project that uses a revision adds a file to `Evaluations/` (`CONTRIBUTING.md`, section 8).
 `STATUS.md` is the summary of the evaluations. A program generates it.

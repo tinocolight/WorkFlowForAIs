@@ -50,12 +50,13 @@ and the Google developer documentation style guide.
 
 A workflow can have any style of work. For example, it can push directly to `main`, or it can have no tests.
 The rules of this file are for this repository only. They are not rules for the projects that use a workflow.
+Each workflow declares its style in a table (section 5), so that users know what they get.
 
 For this repository:
 
 1. You MUST NOT push to `main`. The owner merges pull requests.
 2. The first words of a pull request description MUST be "Merge allowed" or "Do not merge yet".
-3. A pull request MUST pass the checks of section 10.
+3. A pull request MUST pass the check "collector-checks" (section 12).
 
 ### Privacy
 
@@ -68,98 +69,157 @@ This repository is public. Each commit stays in the Git history, also after a la
 5. To record a request or a decision, write a summary of actions in your own words, with no personal details. Do not quote the conversation.
 6. If you added personal information by mistake, tell the owner immediately. A new commit does not remove it from the history.
 
-The check of section 10 refuses a file that contains an email address.
+The check of section 12 refuses a file that contains an email address.
 
-## 4. Add a new workflow
+## 4. Layout and names
 
-1. Create `Theorized_WorkFlow/<Name>_WorkFlow/`. Copy `templates/WORKFLOW_README.md` to its `README.md`.
-2. Create one folder for each target, for example `WebApp/`. Copy `templates/TARGET_README.md` to its `README.md`.
-3. Create `Revision_0001_Working/` in the target. Copy `templates/REVISION_README.md` to its `README.md`.
-4. Put the files that a project copies in `Revision_0001_Working/kit/`.
-5. Run `python3 .github/scripts/evaluations.py --write`.
+```
+Workflows/<Name>/
+  README.md                  the problem, the claims, and the Style table of the workflow
+  <Target>/                  the type of project, for example WebApp
+    README.md                the scope of the target
+    STATUS.md                generated after each merge: the revisions, their verdicts, and their roles
+    YANKED.md                the yanked revisions, one line each (section 10)
+    Evaluations/             one file for each evaluation (section 8)
+    r0001/                   a revision: README.md and kit/
+    r0002/
+```
 
-A new workflow starts in `Theorized_WorkFlow/`.
-The owner can put a new workflow in `Evaluating_WorkFlow/` with this line in the workflow `README.md`:
+- The ID of a revision is `<Name>/<Target>/rNNNN`, for example `LimitedTokens/WebApp/r0002`. The ID is also its Git tag.
+- The path of a revision never changes. The stage of a workflow is not in the path. The program computes it (section 9).
+
+## 5. Add a workflow
+
+1. Create `Workflows/<Name>/README.md` from `templates/WORKFLOW_README.md`.
+2. Fill in the Style table. Write "yes" or "no" for each practice. The check refuses a table with a missing practice.
+3. Create one folder for each target, with a `README.md` from `templates/TARGET_README.md`.
+4. Add the first revision `r0001/` with "Based on: none" (section 6).
+
+A new workflow starts in the stage Theorized.
+The owner can start a workflow in Evaluating with this line in the workflow `README.md`:
 `Entry: Evaluating, decided by the owner on YYYY-MM-DD: <evidence>`.
 
-## 5. Change a Working revision
+The Style table is a declaration, not a judgement. If a new revision adds a line that looks like a practice that the table
+says "no", the check refuses it. Change the line, or change the table in the same pull request.
 
-1. Change the files in the `Revision_<NNNN>_Working/` folder only.
-2. Add one line to the list "Changes since the previous revision" in the revision `README.md`.
-3. Keep each file of the `kit/` folder short. Each line costs tokens for each agent in each session.
+## 6. Propose a revision
 
-## 6. Close a revision
+Work on a revision in a branch and a pull request. The pull request is the place where the revision can change.
+After the merge, the revision never changes. A correction is a new revision.
 
-After the close, nobody changes the Closed revision. A correction goes into the next revision. Do all the steps in one commit:
+1. Copy the folder of the base revision to the next free number, for example `r0003/`.
+2. In its `README.md`, use `templates/REVISION_README.md`. Write these lines:
+   - `Based on: r0002` (one or more existing revisions, separated by ", ").
+   - `Author: <your Git account name>`.
+   - The section "Changes": one line for each change.
+   - The section "Upgrade from the base": what a project that uses the base must do, or "No action.".
+3. Change the files in `kit/`.
+4. Open a pull request.
 
-1. In the revision `README.md`, change the status line to `Status: Closed on YYYY-MM-DD`.
-2. Rename the folder: `git mv Revision_0002_Working Revision_0002_Closed`.
-3. Copy the Closed folder to the next number: `cp -r Revision_0002_Closed Revision_0003_Working`.
-4. In the new `README.md`, change the status line to `Status: Working`. Clear the list of changes.
-5. Run `python3 .github/scripts/evaluations.py --write`.
+The check refuses a new revision in these cases:
 
-After the merge, GitHub Actions creates the Git tag on the merge commit (`.github/workflows/tag-closed.yml`).
-The tag is the revision ID, for example `LimitedTokens/WebApp/r0002`. Nobody creates the tag by hand.
-An existing tag never changes.
+- The number is not higher than every existing number of the target. If another pull request took the number first, rename your folder.
+- The base is yanked or tainted (section 9). Use a different base, or add the line `Reverts: rNNNN` with the reason.
+- A protected rule changed or disappeared. A protected rule is a line with an ID in square brackets, for example `[V3]`.
+  Only the owner can accept the change, with the label "invariant-change" on the pull request.
+- A new line looks like a practice that the Style table says "no" (section 5).
+- A line `Workflow revision: <ID>` in the kit is not the ID of the revision.
+- The target has more than 3 open candidates (section 9). Evaluate the existing candidates first, or create a derived workflow (section 11).
 
-Rename the Working folder. Do not keep a Working folder and a Closed folder with the same number.
-Each number then has one folder and one content.
+After the merge, GitHub Actions creates the tag and a release with a zip of the kit. Nobody does it by hand.
 
-## 7. A project that uses a Closed revision
+## 7. Use a revision
 
-1. Record the revision ID in the project, for example `LimitedTokens/WebApp/r0001`.
-2. The content of the revision never changes. If the workflow moves to a different stage, only the path changes.
-3. To find the revision, use the index in `README.md`, or the Git tag with the same name as the ID.
-4. A rejected workflow stays in `Rejected_WorkFlow/`. Nobody deletes it.
+1. Select a revision on the web page, or in the index of `README.md`. Prefer the role "recommended".
+2. Download the zip, and extract it into the root of your project.
+3. Record the revision ID in your project.
+4. To be told about a yanked revision, select "Watch", then "Custom", then "Releases" on GitHub.
+5. Before you upgrade, read the section "Upgrade from the base" of each revision between yours and the new one.
+   To read all the differences: `git diff <old-ID> <new-ID> -- Workflows/<Name>/<Target>`.
 
-## 8. Evaluate a workflow
+## 8. Evaluate a revision
 
-Evaluate only a Closed revision. One person or one AI agent writes one file for one project.
+1. Copy the block of `templates/EVALUATION.md` into `Workflows/<Name>/<Target>/Evaluations/`.
+2. Name the file `R<NNNN>_<YYYY-MM-DD>_<project-owner>_<project>.md`.
+3. Fill in each field. Use only the values that the template allows.
+4. Open a pull request. The program updates `STATUS.md` after the merge.
 
-1. Copy the block of `templates/EVALUATION.md` into a new file in `<Target>/Evaluations/`.
-2. Name the file `R<NNNN>_<YYYY-MM-DD>_<project-owner>_<project>.md`, with the values of the fields.
-3. Fill in each field. Use only the values that `templates/EVALUATION.md` allows.
-4. Run `python3 .github/scripts/evaluations.py --write`. The program updates `STATUS.md`.
-5. If the program changes the stage of the workflow, move the folder in the same pull request (section 9).
+The check refuses an evaluation in these cases:
+
+- The file is not valid.
+- "Project owner" is not the Git account name of the author of the pull request.
+- One pull request adds evaluations of more than one project owner.
 
 An evaluation file never changes. To correct it, add a new file with a later date. The newest file of a project counts.
+An evaluation by the author of the revision does not count.
 
-## 9. Stages, verdicts, and moves
+## 9. Verdicts, roles, and stages
 
-The program `.github/scripts/evaluations.py` gives each workflow its stage. The pull request moves the folder.
+The program `.github/scripts/collector.py` computes everything in this section. For each revision, one evaluation counts
+for each project: the newest file. Let n be the count. "Harm" is an Overall effect of -1 or -2, or the state "switched".
 
-For each Closed revision, one evaluation counts for each project: the newest file. Let n be the count.
-"Harm" is an evaluation with Overall effect -1 or -2, or with Project state "switched".
-
-| Verdict of a Closed revision | Rule |
+| Verdict | Rule |
 | --- | --- |
-| Open | n is less than 3, or the revision is not Passed and not Failed. |
-| Failed | n is 3 or more, and more than half of the evaluations are harm. |
 | Passed | n is 3 or more; two thirds or more have Overall effect +1 or +2; harm is one quarter or less; two or more project owners; the medians of Ease of use and Goal contribution are 0 or more. |
+| Failed | n is 3 or more, and more than half of the evaluations are harm. |
+| Open | All other cases. |
 
-| Level of a target | Rule, in this order |
+| Role | Rule, in this order |
 | --- | --- |
-| Rejected | The newest Closed revision with n of 3 or more failed. |
-| Tested | A Closed revision passed. |
-| Evaluating | A project evaluated a Closed revision, or the workflow `README.md` has an "Entry:" line of the owner. |
+| yanked | A line in `YANKED.md`, the verdict Failed, or a regression: three or more projects compared it with the previous revision, and the median is -1 or lower. |
+| tainted | A revision that it is based on, directly or indirectly, is yanked, and its own verdict is not Passed. |
+| recommended | The newest revision with the verdict Passed. |
+| passed | An older revision with the verdict Passed. |
+| superseded | An open revision that has a newer revision based on it. |
+| dormant | An open revision with no newer revision, more than 180 days old, with fewer than 3 counted evaluations. |
+| candidate | An open revision with no newer revision. |
+
+| Stage of a target | Rule, in this order |
+| --- | --- |
+| Tested | A revision passed. |
+| Evaluating | A project evaluated a revision, or the workflow `README.md` has an "Entry:" line of the owner. |
 | Theorized | All other cases. |
 
-The stage of the workflow is the highest level of its targets (Theorized, Evaluating, Tested).
-The stage is Rejected if each target with a verdict is Rejected and no target is higher, or if the workflow `README.md` has this line:
-`Rejection: YYYY-MM-DD: decided by the owner: <reason>`.
+The stage of a workflow is the highest stage of its targets. Only the owner rejects a full workflow, with this line in its
+`README.md`: `Rejection: YYYY-MM-DD: decided by the owner: <reason>`. A bad revision does not reject the workflow.
 
-If the stage and the folder are different, the check fails and prints the `git mv` command. Move the full `<Name>_WorkFlow/` folder.
+When a revision works and the next one fails, the first one stays recommended. When ten people propose revisions from the
+same base, each one is a candidate. The evaluations decide which ones pass. A candidate with no evaluations becomes dormant.
 
-## 10. Automatic checks
+## 10. Yank a revision
 
-GitHub Actions runs these checks on each pull request and on each push. Run them before you push:
+Yank a revision that is broken or harmful. The revision stays in its place, because projects use it.
+New projects do not get it, and new revisions cannot be based on it.
+
+1. Add one line at the end of `Workflows/<Name>/<Target>/YANKED.md`: `- rNNNN: YYYY-MM-DD: broken|regression|harmful: <reason>`.
+2. Open a pull request. The owner merges it.
+
+After the merge, the release of the revision gets the mark "[YANKED]". The people who watch releases see it.
+Lines in `YANKED.md` are never changed or removed.
+
+## 11. Derived workflows
+
+If your idea changes the problem or the claims of a workflow, create a new workflow (section 5).
+Add the line `Derived from: <ID>` to its `README.md`. It starts in Theorized. Evaluations do not move to it.
+
+## 12. Automatic checks and settings
+
+The check "collector-checks" runs on each pull request and on each push. Run it before you push:
 
 ```
-bash .github/scripts/check-closed.sh origin/main
-python3 .github/scripts/evaluations.py --check --base origin/main
+python3 .github/scripts/collector.py --check --base origin/main --author <your Git account name>
 ```
 
-1. `check-closed.sh` refuses a change to a Closed revision or to an existing evaluation file. A stage move is accepted.
-2. `evaluations.py --check` refuses an evaluation file that is not valid, a workflow in the wrong stage folder, a generated file that is not current, and a file that contains an email address.
+1. A pull request cannot change the rules that check it. The program runs from the base branch.
+2. The check refuses a change to a merged revision or evaluation, and the cases of sections 6, 8, and 10.
+3. The check refuses hidden characters (for example zero-width or bidirectional characters) and email addresses in any file.
 
-The checks are effective only if the owner protects `main` and requires the check "collector-checks" before a merge.
+After each merge, `.github/workflows/after-merge.yml` writes each `STATUS.md` and the index in `README.md`, and creates
+the tags and the releases. Pull requests do not contain generated files.
+
+The owner sets these options on GitHub:
+
+- Settings, Rules: protect `main`, require a pull request and the check "collector-checks".
+  Allow "GitHub Actions" to bypass the rule, so that the generated files can be written. Without it, the job opens a pull request.
+- Settings, Pages: Source "GitHub Actions".
+- Settings, Actions, General: "Read and write permissions", and "Allow GitHub Actions to create pull requests".
