@@ -1,8 +1,8 @@
-# LimitedTokens / WebApp / Revision 0002
+# LimitedTokens / WebApp / Revision 0003
 
 Status: Working
 Tag: none. A revision receives its tag when it closes (`CONTRIBUTING.md`, section 6).
-Origin: a copy of `Revision_0001_Closed/`.
+Origin: a copy of `Revision_0002_Closed/`.
 
 The content of a Working revision can change at any time. Do not use it for production work.
 
@@ -35,4 +35,4 @@ For each rule that the existing code breaks, the agent records the current count
 
 ## Changes since the previous revision
 
-- Privacy: requests and decisions are summaries of actions, with no quotes and no personal information; people have a role, a Git account name, or a pseudonym (`METHOD.md` section 13, `AGENTS.md` rule 7).
+None yet. Add one line for each change.

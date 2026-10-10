@@ -19,7 +19,8 @@ The names and the rules that are specific to Consonância are not in the revisio
 | Revision | Status | Content |
 | --- | --- | --- |
 | `Revision_0001_Closed/` | Closed on 2026-10-10 | The first general copy of the method. |
-| `Revision_0002_Working/` | Working | A copy of revision 0001. Corrections go here. |
+| `Revision_0002_Closed/` | Closed on 2026-10-10 | Privacy: requests are summaries of actions; people are roles, Git account names, or pseudonyms. |
+| `Revision_0003_Working/` | Working | A copy of revision 0002. Corrections go here. |
 
 ## Evaluations
 
