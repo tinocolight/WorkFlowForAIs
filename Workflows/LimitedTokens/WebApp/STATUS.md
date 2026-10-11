@@ -6,14 +6,15 @@ The rules are in `CONTRIBUTING.md`, section 9.
 - Stage of this target: Evaluating (the "Entry:" line of the owner in the workflow README)
 - Stage of the workflow: Evaluating (the highest stage of its targets (WebApp))
 - Recommended for new projects: none (no revision passed)
-- Base for new revisions: r0002
+- Base for new revisions: r0003
 - Open candidates: 1 of 3
 
 ## Revisions
 
 | Revision | Based on | Author | Added | Counted evaluations | Project owners | Help | Harm | Median ease of use | Median goal contribution | Median compared with previous | Verdict | Role |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| r0002 | r0001 | — | 2026-10-10 | 0 | 0 | 0 | 0 | — | — | — | Open | candidate |
+| r0003 | r0002 | tinocolight | 2026-10-11 | 0 | 0 | 0 | 0 | — | — | — | Open | candidate |
+| r0002 | r0001 | — | 2026-10-10 | 0 | 0 | 0 | 0 | — | — | — | Open | superseded |
 | r0001 | none | — | 2026-10-10 | 0 | 0 | 0 | 0 | — | — | — | Open | superseded |
 
 ## Yanked revisions

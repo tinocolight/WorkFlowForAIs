@@ -45,7 +45,8 @@ Written after each merge by GitHub Actions. Do not edit the table by hand.
 <!-- BEGIN GENERATED: revisions -->
 | Revision ID (also the Git tag) | Workflow stage | Role | Verdict | Counted evaluations | Path |
 | --- | --- | --- | --- | --- | --- |
-| `LimitedTokens/WebApp/r0002` | Evaluating | candidate | Open | 0 | `Workflows/LimitedTokens/WebApp/r0002/` |
+| `LimitedTokens/WebApp/r0003` | Evaluating | candidate | Open | 0 | `Workflows/LimitedTokens/WebApp/r0003/` |
+| `LimitedTokens/WebApp/r0002` | Evaluating | superseded | Open | 0 | `Workflows/LimitedTokens/WebApp/r0002/` |
 | `LimitedTokens/WebApp/r0001` | Evaluating | superseded | Open | 0 | `Workflows/LimitedTokens/WebApp/r0001/` |
 <!-- END GENERATED: revisions -->
 
